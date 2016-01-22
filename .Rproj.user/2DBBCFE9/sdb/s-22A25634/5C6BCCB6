@@ -1,0 +1,18 @@
+{
+    "contents" : "library(rgdal)\nlibrary(magrittr)\nlibrary(leaflet)\nlibrary(ggplot2)\nlibrary(maptools)\n\nshp0 <- readOGR(\"data/Lan_SCB\", layer = \"Lansgranser_SCB_07\")\n\nshp1 <- spTransform(shp0, CRS(\"+proj=longlat +datum=WGS84\"))\n\n# dat0 <- fortify(shp1, region = \"LNKOD\")\n#names(dat0)\n\n# leaflet(shp1) %>%\n#   addPolygons(\n#     stroke = FALSE, fillOpacity = 0.5, smoothFactor = 0.5,\n#     color = \"red\"\n#   ) %>%\n#   addTiles()\n\n\n",
+    "created" : 1453465635942.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3353917595",
+    "id" : "5C6BCCB6",
+    "lastKnownWriteTime" : 1453472784,
+    "path" : "H:/Dokument/Git_repos/shiny/shinyMap/global.R",
+    "project_path" : "global.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "type" : "r_source"
+}

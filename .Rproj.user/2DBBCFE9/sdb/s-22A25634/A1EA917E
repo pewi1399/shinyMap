@@ -1,0 +1,18 @@
+{
+    "contents" : "shinyServer(function(input, output, session){\n  \n  colorpal <- reactive({\n      input$clr\n  })\n    \n  output$map <- renderLeaflet({\n    \n    leaflet(shp1) %>% addTiles() %>%\n      #fitBounds(~min(long), ~min(lat), ~max(long), ~max(lat))\n      fitBounds(~11.13129, ~55.34004, ~24.14984, ~69.04774)\n    \n  })\n\n  observe({\n    \n    pal <- colorpal()\n    \n    leafletProxy(\"map\", data = shp1) %>%\n      clearShapes() %>%\n      #addCircles()\n      addPolygons(\n        stroke = FALSE, fillOpacity = 0.5, smoothFactor = 0.5,\n        color = ~colorQuantile(pal, shp1$LANDAREAKM)(LANDAREAKM)\n      )\n\n  })\n\n  observe({\n    proxy <- leafletProxy(\"map\", data = shp1)\n    \n    # Remove any existing legend, and only if the legend is\n    # enabled, create a new one.\n    proxy %>% clearControls()\n#     if (input$clr) {\n#       pal <- colorpal()\n#       proxy %>% addLegend(position = \"bottomright\",\n#                           pal = pal, values = ~mag\n#       )\n    # }\n  })\n    \n}) ",
+    "created" : 1453467919179.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2192623861",
+    "id" : "A1EA917E",
+    "lastKnownWriteTime" : 1453473605,
+    "path" : "H:/Dokument/Git_repos/shiny/shinyMap/server.R",
+    "project_path" : "server.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "type" : "r_source"
+}
