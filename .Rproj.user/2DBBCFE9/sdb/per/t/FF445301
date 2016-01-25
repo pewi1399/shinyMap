@@ -1,12 +1,12 @@
 {
-    "contents" : "library(shiny)\nlibrary(leaflet)\nlibrary(RColorBrewer)\n\nshinyUI(\n  bootstrapPage(\n    tags$style(type = \"text/css\", \"html, body {width:100%;height:100%}\"),\n    leafletOutput(\"map\", width = \"100%\", height = \"100%\"),\n    absolutePanel(top = 10, right = 10,\n                  selectInput(\"clr\", \"Colorsheme\",\n                              row.names(subset(brewer.pal.info, category %in% c(\"seq\", \"div\")))\n                  )\n    )\n    \n    )\n)",
+    "contents" : "library(shiny)\nlibrary(leaflet)\nlibrary(RColorBrewer)\n\nshinyUI(\n  bootstrapPage(\n    tags$style(type = \"text/css\", \"html, body {width:100%;height:100%}\"),\n    tags$head(includeCSS(\"styles.css\")),\n    leafletOutput(\"map\", width = \"100%\", height = \"100%\"),\n    absolutePanel(top = 10, right = 10,\n                  selectInput(\"clr\", \"Colorsheme\",\n                              selected = \"Spectral\",\n                              row.names(subset(brewer.pal.info, category %in% c(\"seq\", \"div\")))\n                  )\n    ),\n    # Shiny versions prior to 0.11 should use class=\"modal\" instead.\n    absolutePanel(id = \"controls\", class = \"panel panel-default\", fixed = TRUE,\n                  draggable = TRUE, top = 550, left = \"auto\", right = 20, bottom = \"auto\",\n                  width = 330, height = \"auto\",\n                  \n                  h2(\"Befolkning\"),\n                  \n                  selectInput(\"color\", \"Color\", c(\"gg\", \"yy\")),\n                  #showOutput(\"chart\", \"nvd3\")\n                  plotOutput(\"chart\", height = 250)\n    \n    )\n)\n)",
     "created" : 1453467490065.000,
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "527763614",
+    "hash" : "2599504326",
     "id" : "FF445301",
-    "lastKnownWriteTime" : 1453472505,
+    "lastKnownWriteTime" : 1453714268,
     "path" : "H:/Dokument/Git_repos/shiny/shinyMap/ui.R",
     "project_path" : "ui.R",
     "properties" : {
