@@ -3,14 +3,36 @@ shinyServer(function(input, output, session){
   colorpal <- reactive({
       input$clr
   })
+  
     
   output$map <- renderLeaflet({
     
-    leaflet(shp1) %>% addTiles() %>%
+    leaflet(shp1) %>% addTiles() %>% 
+      addProviderTiles("Thunderforest.Landscape") %>%
       #fitBounds(~min(long), ~min(lat), ~max(long), ~max(lat))
-      fitBounds(~11.13129, ~55.34004, ~24.14984, ~69.04774)
+      fitBounds(~17.13129, ~55.34004, ~30.14984, ~69.04774)
     
   })
+  
+  # Show a popup at the given location
+  showZipcodePopup <- function(lat, lng) {
+    leafletProxy("map") %>% addPopups(lat, lng, link)
+  }
+  
+  # When map is clicked, show a popup with city info
+  observe({
+    leafletProxy("map") %>% clearPopups()
+    event <- input$map_shape_click
+    click <- input$mapid_shape_click
+    if (is.null(event))
+      return()
+    
+    isolate({
+      #browser()
+      showZipcodePopup(event$lng, event$lat)
+    })
+  })
+  
 
   observe({
     
@@ -20,8 +42,8 @@ shinyServer(function(input, output, session){
       clearShapes() %>%
       #addCircles()
       addPolygons(
-        stroke = FALSE, fillOpacity = 0.5, smoothFactor = 0.5,
-        color = ~colorQuantile(pal, shp1$LANDAREAKM)(LANDAREAKM)
+        stroke = FALSE, fillOpacity = 0.7, smoothFactor = 0.5,
+        color = ~colorNumeric(pal, as.numeric(shp1$LNKOD))(as.numeric(LNKOD))
       )
 
   })
@@ -38,6 +60,10 @@ shinyServer(function(input, output, session){
 #                           pal = pal, values = ~mag
 #       )
     # }
+  })
+  
+  output$chart <- renderPlot({
+    plot(1:10, (1:10)^2)
   })
     
 }) 
