@@ -1,71 +1,92 @@
 shinyServer(function(input, output, session){
   
-  colorpal <- reactive({
-      input$clr
-  })
   
-    
+  # always print basemap
   output$map <- renderLeaflet({
     
-    leaflet(shp1) %>% addTiles() %>% 
-      addProviderTiles("Thunderforest.Landscape") %>%
-      #addGeoJSON(topoData, weight = 1, color = "#444444", fill = FALSE) %>%
-      addPolygons(popup = shp1$LNNAMN) %>%
+    leaflet() %>% addTiles() %>% 
+      addProviderTiles("Hydda.Base") %>%
+      #addGeoJSON(geojson, weight = 1, fill = TRUE) %>%
+      #addPolygons(popup = shp1$LNNAMN) %>%
       #fitBounds(~min(long), ~min(lat), ~max(long), ~max(lat))
-      fitBounds(~17.13129, ~55.34004, ~30.14984, ~69.04774)
+      fitBounds(17.13129, 55.34004, 30.14984, 69.04774)
     
   })
   
-  # Show a popup at the given location
-#   showZipcodePopup <- function(lat, lng) {
-#     leafletProxy("map") %>% addPopups(lat, lng, link)
-#   }
-#   
-#   # When map is clicked, show a popup with city info
-#   observe({
-#     leafletProxy("map") %>% clearPopups()
-#     event <- input$map_shape_click
-#     click <- input$mapid_shape_click
-#     if (is.null(event))
-#       return()
-#     
-#     isolate({
-#       #browser()
-#       showZipcodePopup(event$lng, event$lat)
-#     })
-#   })
-  
+ lan <- reactive({
+  if(is.null(input$map_geojson_click)){
+    ""
+  }else{
+    geojson$features[[input$map_geojson_click$featureId+1]]$properties$LNNAMN
+  }
+  })
 
-#   observe({
-#     
-#     pal <- colorpal()
-#     
-#     leafletProxy("map", data = shp1) %>%
-#       clearShapes() %>%
-#       #addCircles()
-#       addPolygons(
-#         stroke = FALSE, fillOpacity = 0.7, smoothFactor = 0.5,
-#         color = ~colorNumeric(pal, as.numeric(shp1$LNKOD))(as.numeric(LNKOD))
-#       )
-# 
-#   })
-# 
-#   observe({
-#     proxy <- leafletProxy("map", data = shp1)
-#     
-#     # Remove any existing legend, and only if the legend is
-#     # enabled, create a new one.
-#     proxy %>% clearControls()
-# #     if (input$clr) {
-# #       pal <- colorpal()
-# #       proxy %>% addLegend(position = "bottomright",
-# #                           pal = pal, values = ~mag
-# #       )
-#     # }
-#   })
+ observe({
+ # Separate point and shape layers
+ if(input$type){ # points
+  leafletProxy("map") %>% 
+    clearGeoJSON() %>%
+    clearControls() %>% 
+    addCircles(tatorter$lon, tatorter$lat, radius = tatorter$sizeOnMap,
+                popup = tatorter$ort, color = pal(tatorter$sizeOnMap)) %>% 
+     addLegend("bottomleft", pal = pal, 
+               values = tatorter$sizeOnMap,
+               title = "Kvartil")
+   
+ }else{
+   
+   leafletProxy("map") %>% 
+     clearShapes() %>% 
+     addGeoJSON(geojson, weight = 1, fill = TRUE) %>% 
+         addLegend("bottomleft", pal = polyPal, 
+              values = unlist(colorvar),
+              title = "Kvartil")
+   
+ # Show a popup at the given location
+  showZipcodePopup <- function(lat, lng, id) {
+    
+    wikilink <- "https://sv.wikipedia.org/wiki/"
+    link <- gsub(" ", "_", paste0(wikilink,lan(),"_län"))
+    link <- paste0('<a href=', link, ' target="_blank">', gsub("s$", "", lan()), '</a>') 
+    
+    leafletProxy("map") %>% addPopups(lat, lng, link)
+  } 
+  
+  # When map is clicked, show a popup 
+  observe({
+    leafletProxy("map") %>% clearPopups()
+    event <- input$map_geojson_click
+    if (is.null(event))
+      return()
+    
+    isolate({
+      #browser()
+      showZipcodePopup(event$lng, event$lat, event$featureId)
+    })
+  })
+  
+  observe({ 
+    
+    #browser()
+      
+    leafletProxy("map") %>%
+      clearGeoJSON() %>%
+      clearControls() %>%
+      #addCircles()
+      addGeoJSON(geojson) %>%
+      addLegend("bottomleft", pal = polyPal, 
+                values = unlist(colorvar),
+                title = "Kvartil")
+
+ 
+  }) 
+ }
+ })
+
   
   output$chart <- renderPlot({
-    plot(1:10, (1:10)^2)
-  })
+    plot(1:30, (1:30)^2, col = "dodgerblue")
+    text(gsub("s$", "", lan()),x = 15, y = 500, cex = 1.6)
+    })
     
 }) 
